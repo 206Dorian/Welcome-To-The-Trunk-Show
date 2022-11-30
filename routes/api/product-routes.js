@@ -8,8 +8,8 @@ router.get('/', async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
   try {
-    const categoryData = await Category.findAll({ include: [Product] });
-    res.status(200).json(categoryData);
+    const productData = await Product.findAll({ include: [Category] });
+    res.status(200).json(productData);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -21,8 +21,8 @@ router.get('/', async (req, res) => {
 // be sure to include its associated Category and Tag data
 router.get('/:id', async (req, res) => {
   try {
-    const categoryData = await Category.findOne({ include: [Product] });
-    res.status(200).json(categoryData);
+    const productData = await Product.findByPk(req.params.id,{ include: [Category] });
+    res.status(200).json(productData);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -40,15 +40,15 @@ router.post('/', async (req, res) => {
   Product.create(req.body)
     /* req.body should look like this...
       {
-        product_name: "Basketball",
-        price: 200.00,
-        stock: 3,
-        tagIds: [1, 2, 3, 4]
+        "product_name": "Basketball",
+        "price": 200.00,
+        "stock": 3,
+        "tagIds": [1, 2, 3, 4]
       }
     */
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
-      if (req.body.tagIds.length) {
+      if (req.body.tagIds) {
         const productTagIdArr = req.body.tagIds.map((tag_id) => {
           return {
             product_id: product.id,
@@ -109,9 +109,9 @@ router.put('/:id', (req, res) => {
     });
 });
 
-// **still working on delete**
-// router.delete('/:id', (req, res) => {
-//   // delete one product by its `id` value
-// });
+
+router.delete('/:id', (req, res) => {
+  // delete one product by its `id` value
+});
 
 module.exports = router;
